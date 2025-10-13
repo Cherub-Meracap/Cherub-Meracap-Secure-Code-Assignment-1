@@ -1,11 +1,14 @@
 import os
 import pymysql
 from urllib.request import urlopen
+from dotenv import load_dotenv
+
+load_dotenv('db_config.env')
 
 db_config = {
-    'host': 'mydatabase.com',
-    'user': 'admin',
-    'password': 'secret123'
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD')
 }
 
 def get_user_input():
