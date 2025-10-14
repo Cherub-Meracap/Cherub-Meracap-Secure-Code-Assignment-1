@@ -2,6 +2,7 @@ import os
 import pymysql
 import shlex
 import subprocess
+import requests
 from urllib.request import urlopen
 from dotenv import load_dotenv
 
@@ -25,9 +26,23 @@ def send_email(to, subject, body):
                    , shell=True, check=True)
 
 def get_data():
-    url = 'http://insecure-api.com/get-data'
-    data = urlopen(url).read().decode()
-    return data
+    url = 'https://secure-api.com/get-data'
+    try:
+        if not url.lower().startswith('https://'):
+            raise ValueError("URL must start with HTTPS")
+    
+        response = requests.get(url, verify=True)
+        response.raise_for_status()
+        return response.text
+    
+    except requests.exceptions.SSLError as e:
+        print(f"HTTPS for {url} is invalid: {e}")
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred in request: {e}")
+    except ValueError as e:
+        print(f"Error: {e}")
 
 def save_to_db(data):
     query = "INSERT INTO mytable (column1, column2) VALUES (%s, %s)"
