@@ -1,5 +1,7 @@
 import os
 import pymysql
+import shlex
+import subprocess
 from urllib.request import urlopen
 from dotenv import load_dotenv
 
@@ -16,7 +18,11 @@ def get_user_input():
     return user_input
 
 def send_email(to, subject, body):
-    os.system(f'echo {body} | mail -s "{subject}" {to}')
+    quote_body = shlex.quote(body)
+    quote_subject = shlex.quote(subject)
+    quote_to = shlex.quote(to)
+    subprocess.run(f"printf '%s' {quote_body} | mail -s {quote_subject} {quote_to}"
+                   , shell=True, check=True)
 
 def get_data():
     url = 'http://insecure-api.com/get-data'
