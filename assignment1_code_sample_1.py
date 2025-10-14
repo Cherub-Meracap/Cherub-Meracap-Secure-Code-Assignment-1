@@ -1,6 +1,5 @@
 import os
 import pymysql
-import shlex
 import subprocess
 import requests
 from urllib.request import urlopen
@@ -19,11 +18,7 @@ def get_user_input():
     return user_input
 
 def send_email(to, subject, body):
-    quote_body = shlex.quote(body)
-    quote_subject = shlex.quote(subject)
-    quote_to = shlex.quote(to)
-    subprocess.run(f"printf '%s' {quote_body} | mail -s {quote_subject} {quote_to}"
-                   , shell=True, check=True)
+    subprocess.run(['mail', '-s', subject, to], input=body.encode(), check=True)
 
 def get_data():
     url = 'https://secure-api.com/get-data'
