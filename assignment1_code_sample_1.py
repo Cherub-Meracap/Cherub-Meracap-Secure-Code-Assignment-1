@@ -2,6 +2,7 @@ import os
 import pymysql
 import subprocess
 import requests
+import re
 from urllib.request import urlopen
 from dotenv import load_dotenv
 
@@ -14,8 +15,16 @@ db_config = {
 }
 
 def get_user_input():
-    user_input = input('Enter your name: ')
-    return user_input
+    try:
+        user_input = input('Enter your name: ').strip().lower()
+        if user_input == '':
+            raise ValueError("Input cannot be empty")
+        if not re.match(r"^[a-zA-Z0-9_-]+$", user_input):
+            raise ValueError("User name is invalid")
+        return user_input
+    except ValueError as e:
+        print(f"Invalid input: {e}")
+        return None
 
 def send_email(to, subject, body):
     subprocess.run(['mail', '-s', subject, to], input=body.encode(), check=True)
