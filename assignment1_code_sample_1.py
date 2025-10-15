@@ -57,13 +57,17 @@ def get_data():
         print(f"Error: {e}")
 
 def save_to_db(data):
-    query = "INSERT INTO mytable (column1, column2) VALUES (%s, %s)"
-    connection = pymysql.connect(**db_config)
-    cursor = connection.cursor()
-    cursor.execute(query, (data, 'Another Value'))
-    connection.commit()
-    cursor.close()
-    connection.close()
+    try: 
+        query = "INSERT INTO mytable (column1, column2) VALUES (%s, %s)"
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor()
+        cursor.execute(query, (data, 'Another Value'))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except pymysql.MySQLError:
+        print("Database error occurred")
+
 
 if __name__ == '__main__':
     user_input = get_user_input()
