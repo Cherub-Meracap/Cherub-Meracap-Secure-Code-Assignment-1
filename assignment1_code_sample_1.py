@@ -3,7 +3,6 @@ import pymysql
 import subprocess
 import requests
 import re
-from urllib.request import urlopen
 from dotenv import load_dotenv
 
 load_dotenv('db_config.env')
@@ -27,7 +26,16 @@ def get_user_input():
         return None
 
 def send_email(to, subject, body):
-    subprocess.run(['mail', '-s', subject, to], input=body.encode(), check=True)
+    try:
+        if not re.match(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", to, re.IGNORECASE):
+            raise ValueError("Invalid email address")
+        if "\n" in subject or "\r" in subject:
+            raise ValueError("Invalid characters in subject")
+        subprocess.run(['mail', '-s', subject, to], input=body.encode(), check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error sending email: {e}")
+    except ValueError as e:
+        print(f"Error: {e}")
 
 def get_data():
     url = 'https://secure-api.com/get-data'
